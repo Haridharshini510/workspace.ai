@@ -1,13 +1,13 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 import { IWorkspaceItem } from "./WorkspaceItem.js";
-
+import type { HydratedDocument } from "mongoose";
 interface ICommitment {
   title: string;
   description: string;
   status: string;
   priority: string;
   deadline?: Date;
-  workspaceItemId: Schema.Types.ObjectId;
+  workspaceItemId: Types.ObjectId;
 }
 
 const commitmentSchema = new Schema<ICommitment>(
@@ -17,7 +17,7 @@ const commitmentSchema = new Schema<ICommitment>(
     status: { type: String, required: true },
     priority: { type: String, required: true },
     deadline: { type: Date },
-    workspaceItemId: { type: Schema.Types.ObjectId, ref: "WorkspaceItem", required: true },
+    workspaceItemId: { type: Types.ObjectId, ref: "WorkspaceItem", required: true },
   },
   { timestamps: true }
 );

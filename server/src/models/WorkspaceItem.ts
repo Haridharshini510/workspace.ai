@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 interface IWorkspaceItem {
   title: string;
@@ -9,6 +9,7 @@ interface IWorkspaceItem {
   source: string;
   deadline?: Date;
   eventDate?: Date;
+  _id: Types.ObjectId
 }
 
 const workspaceItemSchema = new Schema<IWorkspaceItem>(

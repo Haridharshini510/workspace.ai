@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Commitment } from "../models/Commitment.js";
 import { WorkspaceItem } from "../models/WorkspaceItem.js";
+import { generateCommitment } from "../services/commitmentGenerationService.js";
 export async function getCommitments(req: Request, res: Response) {
   try {
     const items = await Commitment.find();
@@ -82,5 +83,21 @@ export async function deleteCommitmentById(req: Request, res: Response) {
    catch (error) {
     console.error("Failed to delete commitment:", error);
     res.status(500).json({ error: "Failed to delete commitment" });
+  }
+}
+
+export async function generateCommitmentForWorkspaceItem(req: Request, res: Response) {
+  try {
+    const workspaceItemId = req.params.id;
+    const workspaceItem = await WorkspaceItem.findById(workspaceItemId);
+    if (!workspaceItem) {
+      res.status(404).json({ error: "Workspace item not found" });
+      return;
+    }
+    const commitment = await generateCommitment(workspaceItem);
+    res.status(200).json({message: commitment });
+  } catch (error) {
+    console.error("Failed to generate commitment:", error);
+    res.status(500).json({ error: "Failed to generate commitment" });
   }
 }

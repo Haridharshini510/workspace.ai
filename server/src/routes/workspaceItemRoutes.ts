@@ -6,6 +6,7 @@ import {
   updateWorkspaceItemSchema,
   workspaceItemIdSchema,
 } from "../schemas/workspaceItem.schema.js";
+import { generateCommitmentForWorkspaceItem } from "../controllers/commitmentController.js";
 const router = Router();
 
 router.get("/", getWorkspaceItems);
@@ -14,6 +15,6 @@ router.get("/:id",validate(workspaceItemIdSchema, "params"), getWorkspaceItemByI
 router.patch("/:id",validate(workspaceItemIdSchema, "params"), validate(updateWorkspaceItemSchema), updateWorkspaceItemById);
 router.delete("/:id",validate(workspaceItemIdSchema, "params"), deleteWorkspaceItemById);
 router.get("/:id/actionability",validate(workspaceItemIdSchema, "params"), getWorkspaceItemActionability);
-
+router.post("/:id/generate-commitment",validate(workspaceItemIdSchema, "params"),generateCommitmentForWorkspaceItem);
 
 export default router;

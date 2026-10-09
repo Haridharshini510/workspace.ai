@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { connectDatabase } from "./config/database.js";
 import workspaceItemRoutes from "./routes/workspaceItemRoutes.js";
+import commitmentRoutes from "./routes/commitmentRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,6 +14,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/workspace-items", workspaceItemRoutes);
+app.use("/api/commitments", commitmentRoutes);
+app.use("/api/commitments/:id/generate-commitment", commitmentRoutes);
 
 
 async function start() {

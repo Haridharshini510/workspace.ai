@@ -14,5 +14,4 @@ router.get("/:id",validate(commitmentIdSchema, "params"), getCommitmentById);
 router.patch("/:id",validate(commitmentIdSchema, "params"), validate(updateCommitmentSchema), updateCommitmentById);
 router.delete("/:id",validate(commitmentIdSchema, "params"), deleteCommitmentById);
 
-
 export default router;
