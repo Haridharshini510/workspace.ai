@@ -94,8 +94,11 @@ export async function generateCommitmentForWorkspaceItem(req: Request, res: Resp
       res.status(404).json({ error: "Workspace item not found" });
       return;
     }
-    const commitment = await generateCommitment(workspaceItem);
-    res.status(200).json({message: commitment });
+    const result = await generateCommitment(workspaceItem);
+
+const statusCode = result.outcome === "created" ? 201 : 200;
+
+res.status(statusCode).json(result);
   } catch (error) {
     console.error("Failed to generate commitment:", error);
     res.status(500).json({ error: "Failed to generate commitment" });
