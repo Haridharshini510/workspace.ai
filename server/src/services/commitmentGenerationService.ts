@@ -3,6 +3,7 @@ import { determineActionability } from "./actionabilityService.js";
 import { Commitment } from "../models/Commitment.js";
 import type { HydratedDocument } from "mongoose";
 import type { ICommitment } from "../models/Commitment.js";
+import { determinePriority } from "./priorityService.js";
 
 type CommitmentGenerationResult =
   | { outcome: "created"; commitment: HydratedDocument<ICommitment> }
@@ -21,7 +22,11 @@ export async function generateCommitment(item: HydratedDocument<IWorkspaceItem>)
       title: item.title,
       description: item.description,
         status: "not_started",
-        priority: "medium",
+        priority: determinePriority({
+  title: item.title,  
+  description: item.description,
+  deadline: item.deadline,
+}),
         deadline: item.deadline,
         workspaceItemId: item._id,
     });
