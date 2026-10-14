@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { WorkspaceItem } from "../models/WorkspaceItem.js";
 import { determineActionability } from "../services/actionabilityService.js";
+import { syncCommitmentFromWorkspaceItem } from "../services/commitmentSyncService.js";
 export async function getWorkspaceItems(req: Request, res: Response) {
   try {
     const items = await WorkspaceItem.find();
@@ -36,11 +37,12 @@ export async function updateWorkspaceItemById(req: Request, res: Response) {
       req.body,
       { new: true }
     );
-
+    
     if (!item) {
       res.status(404).json({ error: "Workspace item not found" });
       return;
     }
+    await syncCommitmentFromWorkspaceItem(item);
 
     res.status(200).json(item);
   } catch (error) {
