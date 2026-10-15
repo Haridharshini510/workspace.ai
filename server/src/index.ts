@@ -3,7 +3,7 @@ import express from "express";
 import { connectDatabase } from "./config/database.js";
 import workspaceItemRoutes from "./routes/workspaceItemRoutes.js";
 import commitmentRoutes from "./routes/commitmentRoutes.js";
-
+import timelineRoutes from "./routes/timelineRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
