@@ -48,16 +48,15 @@ export function organizeTimeline(
   timeline.upcoming.sort(
     (a, b) => a.deadline!.getTime() - b.deadline!.getTime()
   );
-
+const total =
+  timeline.overdue.length +
+  timeline.upcoming.length +
+  timeline.completed.length +
+  timeline.undated.length;
   return {
   ...timeline,
   summary: {
-    total:
-      timeline.overdue.length +
-      timeline.upcoming.length +
-      timeline.completed.length +
-      timeline.undated.length,
-
+    total,
     overdue: timeline.overdue.length,
     upcoming: timeline.upcoming.length,
     completed: timeline.completed.length,
