@@ -64,3 +64,9 @@ const total =
   },
 };
 }
+
+export function hasDeadline(
+  commitment: HydratedDocument<ICommitment>
+): boolean {
+  return commitment.deadline != null;
+}
