@@ -8,6 +8,7 @@ export const createCommitmentSchema = z.object({
     "not_started",
     "in_progress",
     "completed",
+    "dismissed",
   ]),
 
   priority: z.enum([

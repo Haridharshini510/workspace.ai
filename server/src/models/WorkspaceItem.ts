@@ -16,9 +16,9 @@ const workspaceItemSchema = new Schema<IWorkspaceItem>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    type: { type: String, required: true },
-    status: { type: String, required: true },
-    priority: { type: String, required: true },
+    type: { type: String, required: true, enum: ["information", "opportunity", "event", "announcement"] },
+    status: { type: String, required: true, enum: ["open", "closed", "upcoming", "active", "expired"] },
+    priority: { type: String, required: true, enum: ["urgent", "high", "medium", "low"] },
     source: { type: String, required: true },
     deadline: { type: Date },
     eventDate: { type: Date },

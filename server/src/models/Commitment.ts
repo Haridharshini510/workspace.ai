@@ -14,8 +14,8 @@ const commitmentSchema = new Schema<ICommitment>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    status: { type: String, required: true },
-    priority: { type: String, required: true },
+    status: { type: String, required: true, enum: ["not_started", "in_progress", "completed", "dismissed"] },
+    priority: { type: String, required: true, enum: ["urgent", "high", "medium", "low"] },
     deadline: { type: Date },
     workspaceItemId: { type: Types.ObjectId, ref: "WorkspaceItem", required: true },
   },

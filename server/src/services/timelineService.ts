@@ -1,72 +1,70 @@
-import type { HydratedDocument } from "mongoose";
-import type { ICommitment } from "../models/Commitment.js";
-export type TimelineCategory =
-  | "upcoming"
-  | "overdue"
-  | "completed"
-  | "undated";
+export type TimelineCategory = "upcoming" | "overdue" | "completed" | "undated";
+type SortField = "deadline" | "priority";
+
+export interface TimelineEntry {
+  _id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  deadline?: Date;
+  source: "commitment" | "workspace_item";
+}
+
+const priorityRank: Record<string, number> = {
+  urgent: 4,
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
+export function sortEntries(
+  entries: TimelineEntry[],
+  sortBy: SortField = "deadline"
+): TimelineEntry[] {
+  return [...entries].sort((a, b) => {
+    if (sortBy === "priority") {
+      const diff = (priorityRank[b.priority] ?? 0) - (priorityRank[a.priority] ?? 0);
+      if (diff !== 0) return diff;
+    }
+
+    if (!a.deadline && !b.deadline) return 0;
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    return a.deadline.getTime() - b.deadline.getTime();
+  });
+}
 
 export function getTimelineCategory(
-  commitment: HydratedDocument<ICommitment>,
+  entry: TimelineEntry,
   now: Date = new Date()
 ): TimelineCategory {
-  if (commitment.status === "completed") {
-    return "completed";
-  }
-
-  if (!commitment.deadline) {
-    return "undated";
-  }
-
-  if (commitment.deadline.getTime() < now.getTime()) {
-    return "overdue";
-  }
-
+  if (entry.status === "completed") return "completed";
+  if (!entry.deadline) return "undated";
+  if (entry.deadline.getTime() < now.getTime()) return "overdue";
   return "upcoming";
 }
 
-export function organizeTimeline(
-  commitments: HydratedDocument<ICommitment>[],
-  now: Date = new Date()
-) {
-  const timeline = {
-    overdue: [] as HydratedDocument<ICommitment>[],
-    upcoming: [] as HydratedDocument<ICommitment>[],
-    completed: [] as HydratedDocument<ICommitment>[],
-    undated: [] as HydratedDocument<ICommitment>[],
+export function organizeTimeline(entries: TimelineEntry[], now: Date = new Date()) {
+  const timeline: Record<TimelineCategory, TimelineEntry[]> = {
+    overdue: [],
+    upcoming: [],
+    completed: [],
+    undated: [],
   };
 
-  for (const commitment of commitments) {
-    const category = getTimelineCategory(commitment, now);
-    timeline[category].push(commitment);
+  for (const entry of entries) {
+    const category = getTimelineCategory(entry, now);
+    timeline[category].push(entry);
   }
 
-  timeline.overdue.sort(
-    (a, b) => a.deadline!.getTime() - b.deadline!.getTime()
-  );
-
-  timeline.upcoming.sort(
-    (a, b) => a.deadline!.getTime() - b.deadline!.getTime()
-  );
-const total =
-  timeline.overdue.length +
-  timeline.upcoming.length +
-  timeline.completed.length +
-  timeline.undated.length;
-  return {
-  ...timeline,
-  summary: {
-    total,
+  const summary = {
+    total: entries.length,
     overdue: timeline.overdue.length,
     upcoming: timeline.upcoming.length,
     completed: timeline.completed.length,
     undated: timeline.undated.length,
-  },
-};
-}
+  };
 
-export function hasDeadline(
-  commitment: HydratedDocument<ICommitment>
-): boolean {
-  return commitment.deadline != null;
+  return { ...timeline, summary };
 }
