@@ -16,6 +16,8 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/workspace-items", workspaceItemRoutes);
 app.use("/api/commitments", commitmentRoutes);
 app.use("/api/commitments/:id/generate-commitment", commitmentRoutes);
+app.use("/api/timeline", timelineRoutes);
+
 
 
 async function start() {
