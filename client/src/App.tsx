@@ -4,6 +4,7 @@ import { queryClient } from '@/lib/query-client'
 import { routes } from '@/lib/constants'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import { AppLayout } from '@/components/layout/AppLayout'
+import LandingPage from '@/pages/LandingPage'
 import InfoPage from '@/pages/InfoPage'
 import CommitmentsPage from '@/pages/CommitmentsPage'
 import OpportunitiesPage from '@/pages/OpportunitiesPage'
@@ -17,12 +18,13 @@ export default function App() {
       <ToastProvider>
         <BrowserRouter>
           <Routes>
+            <Route path={routes.landing} element={<LandingPage />} />
             <Route element={<AppLayout />}>
               <Route path={routes.info} element={<InfoPage />} />
               <Route path={routes.commitments} element={<CommitmentsPage />} />
               <Route path={routes.opportunities} element={<OpportunitiesPage />} />
               <Route path={routes.timeline} element={<TimelinePage />} />
-              <Route path="/items/:id" element={<ItemDetailPage />} />
+              <Route path="/app/items/:id" element={<ItemDetailPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

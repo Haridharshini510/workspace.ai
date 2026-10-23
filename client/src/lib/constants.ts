@@ -20,11 +20,12 @@ export const queryKeys = {
 }
 
 export const routes = {
-  info: '/',
-  commitments: '/commitments',
-  opportunities: '/opportunities',
-  timeline: '/timeline',
-  itemDetail: (id: string) => `/items/${id}`,
+  landing: '/',
+  info: '/app',
+  commitments: '/app/commitments',
+  opportunities: '/app/opportunities',
+  timeline: '/app/timeline',
+  itemDetail: (id: string) => `/app/items/${id}`,
 } as const
 
 export const itemTypeLabels: Record<string, string> = {

@@ -16,7 +16,7 @@ export function TabNav() {
         <NavLink
           key={to}
           to={to}
-          end={to === '/'}
+          end={to === '/app'}
           className={({ isActive }) =>
             `flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors ${
               isActive
