@@ -15,7 +15,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-xs text-gray-500 dark:text-gray-400">
+      <span className="font-satoshi text-xs text-neutral-500 dark:text-neutral-400">
         {page} / {totalPages}
       </span>
       <Button variant="ghost" size="sm" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>

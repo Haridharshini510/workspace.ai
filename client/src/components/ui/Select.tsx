@@ -11,7 +11,7 @@ export function Select({ value, onChange, options, placeholder, className = '' }
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 ${className}`}
+      className={`rounded-lg border border-neutral-300 bg-white px-3 py-1.5 font-satoshi text-sm text-neutral-700 transition-colors focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:border-neutral-50 dark:focus:ring-neutral-50 ${className}`}
     >
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((opt) => (

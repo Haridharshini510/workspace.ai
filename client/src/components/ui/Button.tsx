@@ -6,10 +6,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-  secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  ghost: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+  primary: 'bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200',
+  secondary: 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-800',
+  danger: 'bg-red-600 text-white hover:bg-red-700',
+  ghost: 'text-neutral-500 hover:text-neutral-950 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-50 dark:hover:bg-neutral-800',
 }
 
 const sizes = {
@@ -20,7 +20,7 @@ const sizes = {
 export function Button({ variant = 'primary', size = 'md', className = '', disabled, children, ...props }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-1.5 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full font-satoshi font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${sizes[size]} ${className}`}
       disabled={disabled}
       {...props}
     >

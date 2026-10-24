@@ -11,17 +11,17 @@ const tabs = [
 
 export function TabNav() {
   return (
-    <nav className="flex justify-around border-b border-gray-200 px-4 sm:justify-start sm:gap-1 dark:border-gray-700">
+    <nav className="flex justify-around sm:justify-center sm:gap-1">
       {tabs.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}
           to={to}
           end={to === '/app'}
           className={({ isActive }) =>
-            `flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors ${
+            `flex items-center gap-2 border-b-2 px-4 py-2 font-satoshi text-sm font-medium transition-colors ${
               isActive
-                ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                ? 'border-neutral-950 text-neutral-950 dark:border-neutral-50 dark:text-neutral-50'
+                : 'border-transparent text-neutral-500 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-50'
             }`
           }
         >

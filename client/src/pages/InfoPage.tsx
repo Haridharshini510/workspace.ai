@@ -41,7 +41,7 @@ export default function InfoPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Workspace Items</h2>
+        <h2 className="font-satoshi text-xl font-semibold text-neutral-950 dark:text-neutral-50">Workspace Items</h2>
         <Button onClick={() => setFormOpen(true)}>
           <Plus className="h-4 w-4" /> New Item
         </Button>

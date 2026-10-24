@@ -12,8 +12,8 @@ interface DeleteItemDialogProps {
 export function DeleteItemDialog({ open, onClose, onConfirm, isPending, title }: DeleteItemDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} title="Delete Item">
-      <p className="text-sm text-gray-600 dark:text-gray-400">
-        Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">{title}</span>?
+      <p className="font-newsreader text-sm text-neutral-600 dark:text-neutral-400">
+        Are you sure you want to delete <span className="font-satoshi font-medium text-neutral-950 dark:text-neutral-50">{title}</span>?
         This will also delete all linked commitments.
       </p>
       <div className="mt-4 flex justify-end gap-2">

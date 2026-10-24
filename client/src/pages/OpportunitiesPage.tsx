@@ -9,7 +9,7 @@ export default function OpportunitiesPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Opportunities</h2>
+      <h2 className="font-satoshi text-xl font-semibold text-neutral-950 dark:text-neutral-50">Opportunities</h2>
       {isLoading && <LoadingSpinner />}
       {isError && <ErrorMessage message="Failed to load opportunities." onRetry={() => refetch()} />}
       {items && items.length === 0 && <EmptyState title="No opportunities" message="Opportunities will appear here when added." />}

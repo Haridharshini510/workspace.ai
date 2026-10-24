@@ -1,23 +1,35 @@
 import { Outlet } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { TabNav } from './TabNav'
 import { ThemeToggle } from './ThemeToggle'
+import logoImg from '@/assets/logo.png'
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur dark:bg-gray-900/80">
+    <div className="min-h-screen bg-white text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50">
+      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-xl dark:bg-neutral-950/90">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-bold tracking-tight">Workspace.ai</h1>
+          <Link to="/">
+            <img
+              src={logoImg}
+              alt="Workspace.ai"
+              className="h-20 w-auto dark:invert"
+            />
+          </Link>
+
+          <div className="hidden sm:block">
+            <TabNav />
+          </div>
+
           <ThemeToggle />
         </div>
-        <div className="mx-auto hidden max-w-5xl sm:block">
-          <TabNav />
-        </div>
       </header>
+
       <main className="mx-auto max-w-5xl px-4 py-6 pb-20 sm:pb-6">
         <Outlet />
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 bg-white/80 backdrop-blur sm:hidden dark:border-gray-700 dark:bg-gray-900/80">
+
+      <nav className="fixed bottom-0 left-0 right-0 z-10 border-t border-neutral-200 bg-white/90 backdrop-blur-xl sm:hidden dark:border-neutral-800 dark:bg-neutral-950/90">
         <TabNav />
       </nav>
     </div>

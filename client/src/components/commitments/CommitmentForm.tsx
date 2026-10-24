@@ -55,11 +55,11 @@ export function CommitmentForm({ initial, workspaceItemId, onSubmit, onCancel, i
       <Textarea id="description" label="Description" value={description} onChange={(e) => setDescription(e.target.value)} error={errors.description} />
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+          <label className="block font-satoshi text-sm font-medium text-neutral-700 dark:text-neutral-300">Status</label>
           <Select value={status} onChange={setStatus} options={statusOptions} />
         </div>
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+          <label className="block font-satoshi text-sm font-medium text-neutral-700 dark:text-neutral-300">Priority</label>
           <Select value={priority} onChange={setPriority} options={priorityOptions} />
         </div>
       </div>

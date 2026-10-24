@@ -1,40 +1,49 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
-
-const navLinks = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Results', href: '#results' },
-]
+import logoImg from '@/assets/logo.png'
 
 export function LandingNav() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur dark:bg-gray-900/80">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link to="/" className="text-lg font-bold tracking-tight">
-          Workspace.ai
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-white/90 backdrop-blur-xl dark:bg-neutral-950/90'
+          : 'bg-transparent'
+      }`}
+    >
+      <div className="mx-auto flex max-w-300 items-center justify-between px-6 py-5 lg:px-12">
+        <Link to="/">
+          <img
+            src={logoImg}
+            alt="Workspace.ai"
+            className="h-20 w-auto dark:invert"
+          />
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map(({ label, href }) => (
-            <a
-              key={href}
-              href={href}
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-            >
-              {label}
-            </a>
-          ))}
+        <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
           <Link
             to="/app"
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            className="rounded-full border border-neutral-300 px-5 py-2 font-satoshi text-[0.8125rem] font-medium text-neutral-950 transition-colors hover:border-neutral-950 hover:bg-neutral-950 hover:text-white dark:border-neutral-700 dark:text-neutral-50 dark:hover:border-neutral-50 dark:hover:bg-neutral-50 dark:hover:text-neutral-950"
           >
-            Get Started
+            Sign in
+          </Link>
+          <Link
+            to="/app"
+            className="rounded-full bg-neutral-950 px-5 py-2 font-satoshi text-[0.8125rem] font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
+          >
+            Get started
           </Link>
         </div>
 
@@ -42,7 +51,7 @@ export function LandingNav() {
           <ThemeToggle />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="rounded-md p-2 text-neutral-950 dark:text-neutral-50"
             aria-label="Toggle menu"
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -51,22 +60,20 @@ export function LandingNav() {
       </div>
 
       {menuOpen && (
-        <div className="border-t border-gray-200 px-4 pb-4 md:hidden dark:border-gray-700">
-          {navLinks.map(({ label, href }) => (
-            <a
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-            >
-              {label}
-            </a>
-          ))}
+        <div className="border-t border-neutral-200 bg-white/95 px-6 pb-5 backdrop-blur-xl md:hidden dark:border-neutral-800 dark:bg-neutral-950/95">
           <Link
             to="/app"
-            className="mt-2 block rounded-md bg-indigo-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-indigo-700"
+            onClick={() => setMenuOpen(false)}
+            className="mt-4 block rounded-full border border-neutral-300 px-5 py-2.5 text-center font-satoshi text-[0.8125rem] font-medium text-neutral-950 dark:border-neutral-700 dark:text-neutral-50"
           >
-            Get Started
+            Sign in
+          </Link>
+          <Link
+            to="/app"
+            onClick={() => setMenuOpen(false)}
+            className="mt-2 block rounded-full bg-neutral-950 px-5 py-2.5 text-center font-satoshi text-[0.8125rem] font-medium text-white dark:bg-neutral-50 dark:text-neutral-950"
+          >
+            Get started
           </Link>
         </div>
       )}

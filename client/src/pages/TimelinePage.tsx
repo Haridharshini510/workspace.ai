@@ -9,9 +9,9 @@ import type { TimelineSortBy } from '@/types/timeline'
 
 const categories = [
   { key: 'overdue' as const, label: 'Overdue', color: 'text-red-600 dark:text-red-400' },
-  { key: 'upcoming' as const, label: 'Upcoming', color: 'text-blue-600 dark:text-blue-400' },
+  { key: 'upcoming' as const, label: 'Upcoming', color: 'text-neutral-950 dark:text-neutral-50' },
   { key: 'completed' as const, label: 'Completed', color: 'text-green-600 dark:text-green-400' },
-  { key: 'undated' as const, label: 'Undated', color: 'text-gray-600 dark:text-gray-400' },
+  { key: 'undated' as const, label: 'Undated', color: 'text-neutral-500 dark:text-neutral-400' },
 ]
 
 export default function TimelinePage() {
@@ -21,7 +21,7 @@ export default function TimelinePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Timeline</h2>
+        <h2 className="font-satoshi text-xl font-semibold text-neutral-950 dark:text-neutral-50">Timeline</h2>
         <TimelineSortToggle sortBy={sortBy} onChange={setSortBy} />
       </div>
 

@@ -17,16 +17,16 @@ export function WorkspaceItemCard({ item, onEdit, onDelete }: WorkspaceItemCardP
   return (
     <div
       onClick={() => navigate(routes.itemDetail(item._id))}
-      className="cursor-pointer rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
+      className="cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-neutral-400 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-600"
     >
       <div className="mb-2 flex items-start justify-between gap-2">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{item.title}</h3>
+        <h3 className="font-satoshi text-sm font-semibold text-neutral-950 line-clamp-1 dark:text-neutral-50">{item.title}</h3>
         <div className="flex shrink-0 items-center gap-1">
           <Badge className={priorityColor(item.priority)}>{item.priority}</Badge>
           {onEdit && (
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(item) }}
-              className="rounded p-1 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+              className="rounded-full p-1 text-neutral-400 transition-colors hover:text-neutral-950 dark:hover:text-neutral-50"
             >
               <Pencil className="h-3.5 w-3.5" />
             </button>
@@ -34,23 +34,23 @@ export function WorkspaceItemCard({ item, onEdit, onDelete }: WorkspaceItemCardP
           {onDelete && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(item) }}
-              className="rounded p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+              className="rounded-full p-1 text-neutral-400 transition-colors hover:text-red-600 dark:hover:text-red-400"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
       </div>
-      <p className="mb-3 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{item.description}</p>
+      <p className="mb-3 font-newsreader text-xs text-neutral-500 line-clamp-2 dark:text-neutral-400">{item.description}</p>
       <div className="flex flex-wrap items-center gap-2">
-        <Badge className="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+        <Badge className="bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
           {itemTypeLabels[item.type] ?? item.type}
         </Badge>
-        <Badge className="bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+        <Badge className="bg-neutral-950/5 text-neutral-950 dark:bg-neutral-50/10 dark:text-neutral-50">
           {item.status}
         </Badge>
         {item.deadline && (
-          <span className="ml-auto flex items-center gap-1 text-xs text-gray-400">
+          <span className="ml-auto flex items-center gap-1 font-satoshi text-xs text-neutral-400">
             <Calendar className="h-3 w-3" />
             {formatDate(item.deadline)}
           </span>

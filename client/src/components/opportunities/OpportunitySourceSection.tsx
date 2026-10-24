@@ -15,11 +15,11 @@ export function OpportunitySourceSection({ source, items }: OpportunitySourceSec
     <section>
       <button
         onClick={() => setExpanded((e) => !e)}
-        className="flex w-full items-center gap-2 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-100"
+        className="flex w-full items-center gap-2 py-2 text-left font-satoshi text-sm font-semibold text-neutral-950 dark:text-neutral-50"
       >
         {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         {source}
-        <span className="text-xs font-normal text-gray-400">({items.length})</span>
+        <span className="text-xs font-normal text-neutral-400">({items.length})</span>
       </button>
       {expanded && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

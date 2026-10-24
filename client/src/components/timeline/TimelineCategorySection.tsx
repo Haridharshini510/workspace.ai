@@ -25,15 +25,15 @@ export function TimelineCategorySection({ category, label, color, sortBy, initia
   if (entries.length === 0 && isPageOne) {
     return (
       <section>
-        <h3 className={`mb-2 text-sm font-semibold ${color}`}>{label}</h3>
-        <p className="text-xs text-gray-400">No entries.</p>
+        <h3 className={`mb-2 font-satoshi text-sm font-semibold ${color}`}>{label}</h3>
+        <p className="font-newsreader text-xs text-neutral-400">No entries.</p>
       </section>
     )
   }
 
   return (
     <section>
-      <h3 className={`mb-2 text-sm font-semibold ${color}`}>{label}</h3>
+      <h3 className={`mb-2 font-satoshi text-sm font-semibold ${color}`}>{label}</h3>
       <div className="space-y-2">
         {entries.map((entry, i) => (
           <div key={entry._id} className="animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
