@@ -9,6 +9,7 @@ interface ICommitment {
   deadline?: Date;
   workspaceItemId: Types.ObjectId;
   hiddenFromTimeline?: boolean;
+  userId: Types.ObjectId;
 }
 
 const commitmentSchema = new Schema<ICommitment>(
@@ -20,6 +21,7 @@ const commitmentSchema = new Schema<ICommitment>(
     deadline: { type: Date },
     workspaceItemId: { type: Types.ObjectId, ref: "WorkspaceItem", required: true },
     hiddenFromTimeline: { type: Boolean, default: false },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

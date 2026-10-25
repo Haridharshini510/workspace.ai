@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {getWorkspaceItems, createWorkspaceItem, getWorkspaceItemById, updateWorkspaceItemById,deleteWorkspaceItemById,getWorkspaceItemActionability} from "../controllers/workspaceItemController.js";
 import { validate } from "../middleware/validate.js";
+import { requireAuth } from "../middleware/auth.js";
 import {
   createWorkspaceItemSchema,
   updateWorkspaceItemSchema,
@@ -8,6 +9,9 @@ import {
 } from "../schemas/workspaceItem.schema.js";
 import { generateCommitmentForWorkspaceItem, getCommitmentsByWorkspaceItem } from "../controllers/commitmentController.js";
 const router = Router();
+
+// Apply auth middleware to all routes
+router.use(requireAuth);
 
 router.get("/", getWorkspaceItems);
 router.post("/", validate(createWorkspaceItemSchema), createWorkspaceItem);

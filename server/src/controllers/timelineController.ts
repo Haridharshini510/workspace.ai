@@ -34,9 +34,10 @@ export async function getTimeline(req: Request, res: Response) {
     };
 
     const [commitments, workspaceItems] = await Promise.all([
-      Commitment.find({ hiddenFromTimeline: { $ne: true } }),
+      Commitment.find({ hiddenFromTimeline: { $ne: true }, userId: req.userId }),
       WorkspaceItem.find({
         hiddenFromTimeline: { $ne: true },
+        userId: req.userId,
         $or: [
           { deadline: { $ne: null } },
           { eventDate: { $ne: null } },

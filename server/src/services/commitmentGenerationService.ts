@@ -23,12 +23,13 @@ export async function generateCommitment(item: HydratedDocument<IWorkspaceItem>)
       description: item.description,
         status: "not_started",
         priority: determinePriority({
-  title: item.title,  
+  title: item.title,
   description: item.description,
   deadline: item.deadline,
 }),
         deadline: item.deadline,
         workspaceItemId: item._id,
+        userId: item.userId,
     });
     return { outcome: "created", commitment };
   }

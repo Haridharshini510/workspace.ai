@@ -4,7 +4,7 @@ import { WorkspaceItem } from "../models/WorkspaceItem.js";
 import { generateCommitment } from "../services/commitmentGenerationService.js";
 export async function getCommitments(req: Request, res: Response) {
   try {
-    const filter: Record<string, string> = {};
+    const filter: Record<string, any> = { userId: req.userId };
     if (req.query.workspaceItemId) filter.workspaceItemId = req.query.workspaceItemId as string;
     if (req.query.status) filter.status = req.query.status as string;
     if (req.query.priority) filter.priority = req.query.priority as string;
@@ -20,11 +20,7 @@ export async function getCommitments(req: Request, res: Response) {
 export async function getCommitmentById(req: Request, res: Response) {
   try {
     const id = req.params.id;
-    const item = await Commitment.findById(
-  id,
-  req.body,
-  { new: true, runValidators: true }
-);
+    const item = await Commitment.findOne({ _id: id, userId: req.userId });
     if(!item){
       res.status(404).json({ error: "Commitment not found" });
       return;
@@ -41,8 +37,8 @@ export async function updateCommitmentById(req: Request, res: Response) {
   try {
     const id = req.params.id;
 
-    const item = await Commitment.findByIdAndUpdate(
-      id,
+    const item = await Commitment.findOneAndUpdate(
+      { _id: id, userId: req.userId },
       req.body,
       { new: true }
     );
@@ -57,18 +53,21 @@ export async function updateCommitmentById(req: Request, res: Response) {
     console.error("Failed to update commitment:", error);
     res.status(500).json({ error: "Failed to update commitment" });
   }
-  
+
 }
 
 export async function createCommitment(req: Request, res: Response) {
   try {
     const workspaceItemId = req.body.workspaceItemId;
-    const workspacceItem = await WorkspaceItem.findById(workspaceItemId);
+    const workspacceItem = await WorkspaceItem.findOne({ _id: workspaceItemId, userId: req.userId });
     if(!workspacceItem){
       res.status(404).json({ error: "Workspace item not found" });
       return;
     }
-    const item = await Commitment.create(req.body);
+    const item = await Commitment.create({
+      ...req.body,
+      userId: req.userId,
+    });
 
     res.status(201).json(item);
   } catch (error) {
@@ -80,9 +79,7 @@ export async function createCommitment(req: Request, res: Response) {
 export async function deleteCommitmentById(req: Request, res: Response) {
   try {
     const id = req.params.id;
-    const item = await Commitment.findByIdAndDelete(
-      id
-    );
+    const item = await Commitment.findOneAndDelete({ _id: id, userId: req.userId });
     if(!item){
       res.status(404).json({ error: "Commitment not found" });
       return;
@@ -98,12 +95,12 @@ export async function deleteCommitmentById(req: Request, res: Response) {
 export async function getCommitmentsByWorkspaceItem(req: Request, res: Response) {
   try {
     const workspaceItemId = req.params.id;
-    const workspaceItem = await WorkspaceItem.findById(workspaceItemId);
+    const workspaceItem = await WorkspaceItem.findOne({ _id: workspaceItemId, userId: req.userId });
     if (!workspaceItem) {
       res.status(404).json({ error: "Workspace item not found" });
       return;
     }
-    const commitments = await Commitment.find({ workspaceItemId });
+    const commitments = await Commitment.find({ workspaceItemId, userId: req.userId });
     res.status(200).json(commitments);
   } catch (error) {
     console.error("Failed to retrieve commitments for workspace item:", error);
@@ -114,7 +111,7 @@ export async function getCommitmentsByWorkspaceItem(req: Request, res: Response)
 export async function generateCommitmentForWorkspaceItem(req: Request, res: Response) {
   try {
     const workspaceItemId = req.params.id;
-    const workspaceItem = await WorkspaceItem.findById(workspaceItemId);
+    const workspaceItem = await WorkspaceItem.findOne({ _id: workspaceItemId, userId: req.userId });
     if (!workspaceItem) {
       res.status(404).json({ error: "Workspace item not found" });
       return;
@@ -125,7 +122,7 @@ const statusCode = result.outcome === "created" ? 201 : 200;
 
 res.status(statusCode).json(result);
   } catch (error) {
-    console.error("Failed to generate commitment:", error);
+    console.error("Failed to generate commitment:" , error);
     res.status(500).json({ error: "Failed to generate commitment" });
   }
 }

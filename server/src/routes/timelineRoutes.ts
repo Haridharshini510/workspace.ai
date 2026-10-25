@@ -1,9 +1,13 @@
 import { Router } from "express";
 import { getTimeline } from "../controllers/timelineController.js";
 import { validate } from "../middleware/validate.js";
+import { requireAuth } from "../middleware/auth.js";
 import { timelineQuerySchema } from "../schemas/timeline.schema.js";
 
 const router = Router();
+
+// Apply auth middleware to all routes
+router.use(requireAuth);
 
 router.get("/", validate(timelineQuerySchema, "query"), getTimeline);
 

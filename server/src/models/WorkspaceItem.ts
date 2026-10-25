@@ -10,6 +10,7 @@ interface IWorkspaceItem {
   deadline?: Date;
   eventDate?: Date;
   hiddenFromTimeline?: boolean;
+  userId: Types.ObjectId;
   _id: Types.ObjectId
 }
 
@@ -24,6 +25,7 @@ const workspaceItemSchema = new Schema<IWorkspaceItem>(
     deadline: { type: Date },
     eventDate: { type: Date },
     hiddenFromTimeline: { type: Boolean, default: false },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );
