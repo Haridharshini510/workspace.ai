@@ -21,6 +21,7 @@ export interface CreateCommitmentPayload {
   priority: Priority
   deadline?: string
   workspaceItemId: string
+  hiddenFromTimeline?: boolean
 }
 
 export type UpdateCommitmentPayload = Partial<CreateCommitmentPayload>

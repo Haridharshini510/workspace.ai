@@ -20,6 +20,7 @@ export const createCommitmentSchema = z.object({
 
   deadline: z.coerce.date().optional(),
   workspaceItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
+  hiddenFromTimeline: z.boolean().optional(),
 });
 
 export const updateCommitmentSchema =

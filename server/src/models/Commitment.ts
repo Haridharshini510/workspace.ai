@@ -8,6 +8,7 @@ interface ICommitment {
   priority: string;
   deadline?: Date;
   workspaceItemId: Types.ObjectId;
+  hiddenFromTimeline?: boolean;
 }
 
 const commitmentSchema = new Schema<ICommitment>(
@@ -18,6 +19,7 @@ const commitmentSchema = new Schema<ICommitment>(
     priority: { type: String, required: true, enum: ["urgent", "high", "medium", "low"] },
     deadline: { type: Date },
     workspaceItemId: { type: Types.ObjectId, ref: "WorkspaceItem", required: true },
+    hiddenFromTimeline: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -30,6 +30,7 @@ export const createWorkspaceItemSchema = z.object({
 
   deadline: z.coerce.date().optional(),
   eventDate: z.coerce.date().optional(),
+  hiddenFromTimeline: z.boolean().optional(),
 });
 
 export const updateWorkspaceItemSchema =

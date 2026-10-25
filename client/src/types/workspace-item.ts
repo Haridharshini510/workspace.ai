@@ -26,6 +26,7 @@ export interface CreateWorkspaceItemPayload {
   source: string
   deadline?: string
   eventDate?: string
+  hiddenFromTimeline?: boolean
 }
 
 export type UpdateWorkspaceItemPayload = Partial<CreateWorkspaceItemPayload>

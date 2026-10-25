@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useTimeline } from '@/hooks/use-timeline'
+import { useUpdateCommitment } from '@/hooks/use-commitments'
+import { useUpdateWorkspaceItem } from '@/hooks/use-workspace-items'
 import { TimelineSummaryBar } from '@/components/timeline/TimelineSummaryBar'
 import { TimelineSortToggle } from '@/components/timeline/TimelineSortToggle'
 import { TimelineCategorySection } from '@/components/timeline/TimelineCategorySection'
@@ -18,10 +20,21 @@ export default function TimelinePage() {
   const [sortBy, setSortBy] = useState<TimelineSortBy>('deadline')
   const { data, isLoading, isError, refetch } = useTimeline(sortBy)
 
+  const updateCommitment = useUpdateCommitment()
+  const updateWorkspaceItem = useUpdateWorkspaceItem()
+
+  const handleDismiss = (id: string, source: 'commitment' | 'workspace_item') => {
+    if (source === 'commitment') {
+      updateCommitment.mutate({ id, payload: { hiddenFromTimeline: true } })
+    } else {
+      updateWorkspaceItem.mutate({ id, payload: { hiddenFromTimeline: true } })
+    }
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-12">
       <div className="flex items-center justify-between">
-        <h2 className="font-satoshi text-xl font-semibold text-neutral-950 dark:text-neutral-50">Timeline</h2>
+        <h1 className="font-satoshi text-3xl font-bold text-neutral-950 dark:text-neutral-50">Timeline</h1>
         <TimelineSortToggle sortBy={sortBy} onChange={setSortBy} />
       </div>
 
@@ -31,7 +44,7 @@ export default function TimelinePage() {
       {data && (
         <>
           <TimelineSummaryBar summary={data.summary} />
-          <div className="space-y-6">
+          <div className="mt-8">
             {categories.map(({ key, label, color }) => (
               <TimelineCategorySection
                 key={key}
@@ -41,6 +54,7 @@ export default function TimelinePage() {
                 sortBy={sortBy}
                 initialEntries={data[key]}
                 initialTotalPages={data.pagination[key].totalPages}
+                onDismiss={handleDismiss}
               />
             ))}
           </div>
