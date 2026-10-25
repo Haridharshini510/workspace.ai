@@ -1,11 +1,26 @@
 import type { ApiError } from '@/types/common'
 
+const TOKEN_KEY = 'workspace_ai_token'
+
 class ApiClient {
   private baseUrl = '/api'
 
+  private getAuthHeaders(): HeadersInit {
+    const token = localStorage.getItem(TOKEN_KEY)
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    return headers
+  }
+
   private async request<T>(path: string, options?: RequestInit): Promise<T> {
     const res = await fetch(`${this.baseUrl}${path}`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.getAuthHeaders(),
       ...options,
     })
     if (!res.ok) {

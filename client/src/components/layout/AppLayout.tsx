@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { TabNav } from './TabNav'
 import { ThemeToggle } from './ThemeToggle'
+import { UserMenu } from './UserMenu'
 import logoImg from '@/assets/logo.png'
 
 export function AppLayout() {
@@ -21,7 +22,10 @@ export function AppLayout() {
             <TabNav />
           </div>
 
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <UserMenu />
+          </div>
         </div>
       </header>
 

@@ -5,6 +5,7 @@ import { WorkspaceItemFilters } from '@/components/workspace-items/WorkspaceItem
 import { WorkspaceItemList } from '@/components/workspace-items/WorkspaceItemList'
 import { WorkspaceItemForm } from '@/components/workspace-items/WorkspaceItemForm'
 import { DeleteItemDialog } from '@/components/workspace-items/DeleteItemDialog'
+import { GmailSyncButton } from '@/components/gmail/GmailSyncButton'
 import { Dialog } from '@/components/ui/Dialog'
 import { Button } from '@/components/ui/Button'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -42,9 +43,12 @@ export default function InfoPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-satoshi text-xl font-semibold text-neutral-950 dark:text-neutral-50">Workspace Items</h2>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="h-4 w-4" /> New Item
-        </Button>
+        <div className="flex items-center gap-2">
+          <GmailSyncButton />
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="h-4 w-4" /> New Item
+          </Button>
+        </div>
       </div>
 
       <WorkspaceItemFilters filters={filters} onChange={setFilters} />

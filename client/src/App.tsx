@@ -4,8 +4,11 @@ import { queryClient } from '@/lib/query-client'
 import { routes } from '@/lib/constants'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import LandingPage from '@/pages/LandingPage'
+import LoginPage from '@/pages/LoginPage'
+import AuthCallbackPage from '@/pages/AuthCallbackPage'
 import InfoPage from '@/pages/InfoPage'
 import CommitmentsPage from '@/pages/CommitmentsPage'
 import OpportunitiesPage from '@/pages/OpportunitiesPage'
@@ -21,14 +24,22 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path={routes.landing} element={<LandingPage />} />
-              <Route element={<AppLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                }
+              >
                 <Route path={routes.info} element={<InfoPage />} />
                 <Route path={routes.commitments} element={<CommitmentsPage />} />
                 <Route path={routes.opportunities} element={<OpportunitiesPage />} />
                 <Route path={routes.timeline} element={<TimelinePage />} />
                 <Route path="/app/items/:id" element={<ItemDetailPage />} />
-                <Route path="*" element={<NotFoundPage />} />
               </Route>
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </BrowserRouter>
         </ToastProvider>

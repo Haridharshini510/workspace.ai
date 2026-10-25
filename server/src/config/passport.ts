@@ -33,11 +33,18 @@ passport.use(
             email,
             name,
             picture,
+            accessToken,
+            refreshToken,
           });
         } else {
-          // Update existing user info (in case name/picture changed)
+          // Update existing user info and tokens
           user.name = name;
           user.picture = picture;
+          user.accessToken = accessToken;
+          // Only update refresh token if provided (Google may not always return it)
+          if (refreshToken) {
+            user.refreshToken = refreshToken;
+          }
           await user.save();
         }
 

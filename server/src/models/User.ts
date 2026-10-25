@@ -5,6 +5,8 @@ interface IUser {
   email: string;
   name: string;
   picture?: string;
+  accessToken?: string;
+  refreshToken?: string;
   _id: Types.ObjectId;
 }
 
@@ -14,6 +16,8 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     picture: { type: String },
+    accessToken: { type: String },
+    refreshToken: { type: String },
   },
   { timestamps: true }
 );
