@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 import { User } from "../models/User.js";
 import { fetchRecentEmails } from "../services/gmailService.js";
 import { filterEmails } from "../services/emailFilterService.js";
+import { classifyEmail } from "../services/emailClassificationService.js";
 import { processEmailsToWorkspaceItems } from "../services/emailProcessingService.js";
+import type { EmailFilterResult } from "../services/emailFilterService.js";
 
 // Sync Gmail emails to workspace items
 export async function syncGmailEmails(req: Request, res: Response) {
@@ -21,29 +23,67 @@ export async function syncGmailEmails(req: Request, res: Response) {
       });
     }
 
-    // Fetch recent emails from Gmail
+    // Step 1: Fetch recent emails from Gmail
     console.log(`Fetching emails for user ${user.email}...`);
     const emails = await fetchRecentEmails(user, 50);
-
     console.log(`Fetched ${emails.length} emails`);
 
-    // Filter emails (remove spam, OTPs, etc.)
-    const { relevant, filtered } = filterEmails(emails);
+    // Step 2: Tier 1 + 2 filtering (Gmail labels + keywords)
+    const { confident, uncertain, filtered } = filterEmails(emails);
+    console.log(`Confident: ${confident.length}, Uncertain: ${uncertain.length}, Filtered: ${filtered.length}`);
 
-    console.log(`Filtered to ${relevant.length} relevant emails`);
+    // Step 3: Tier 3 — LLM classification for uncertain emails
+    const llmAccepted: Array<{ email: typeof uncertain[0]; result: EmailFilterResult }> = [];
+    let llmRejected = 0;
 
-    // Process relevant emails into workspace items
-    const results = await processEmailsToWorkspaceItems(relevant, user._id);
+    for (const email of uncertain) {
+      try {
+        const classification = await classifyEmail(email);
 
-    console.log(
-      `Created ${results.created.length} items, updated ${results.updated.length} items`
-    );
+        if (classification.isRelevant) {
+          llmAccepted.push({
+            email,
+            result: {
+              isRelevant: true,
+              reason: `LLM: ${classification.reason}`,
+              category: classification.type === "event" ? "opportunity" : classification.type as EmailFilterResult["category"],
+              score: 75,
+            },
+          });
+        } else {
+          llmRejected++;
+          console.log(`LLM rejected: "${email.subject}" — ${classification.reason}`);
+        }
+      } catch (error) {
+        console.error(`LLM classification failed for "${email.subject}":`, error);
+        llmAccepted.push({
+          email,
+          result: {
+            isRelevant: true,
+            reason: "LLM classification failed — defaulting to relevant",
+            category: "information",
+            score: 40,
+          },
+        });
+      }
+    }
+
+    console.log(`LLM accepted: ${llmAccepted.length}, LLM rejected: ${llmRejected}`);
+
+    // Step 4: Combine confident + LLM-accepted emails and process
+    const allRelevant = [...confident, ...llmAccepted];
+    const results = await processEmailsToWorkspaceItems(allRelevant, user._id);
+
+    console.log(`Created ${results.created.length} items, updated ${results.updated.length} items`);
 
     res.status(200).json({
       success: true,
       summary: {
         totalEmails: emails.length,
-        relevantEmails: relevant.length,
+        confidentRelevant: confident.length,
+        llmClassified: uncertain.length,
+        llmAccepted: llmAccepted.length,
+        llmRejected,
         filteredOut: filtered.length,
         itemsCreated: results.created.length,
         itemsUpdated: results.updated.length,

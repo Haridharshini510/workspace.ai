@@ -63,12 +63,45 @@ const OPPORTUNITY_KEYWORDS = [
 export interface EmailFilterResult {
   isRelevant: boolean;
   reason: string;
-  category: "spam" | "otp" | "social" | "opportunity" | "information" | "unknown";
+  category: "spam" | "otp" | "social" | "promotion" | "update" | "opportunity" | "information" | "unknown";
   score: number; // 0-100, higher = more relevant
 }
 
 // Filter email to determine if it's relevant
 export function filterEmail(email: GmailMessage): EmailFilterResult {
+  const labels = email.labels || [];
+
+  // Tier 1: Gmail's own ML classification — trust Google's labels first
+  if (labels.includes("CATEGORY_PROMOTIONS")) {
+    return {
+      isRelevant: false,
+      reason: "Gmail classified as promotion",
+      category: "promotion",
+      score: 0,
+    };
+  }
+
+  if (labels.includes("CATEGORY_SOCIAL")) {
+    return {
+      isRelevant: false,
+      reason: "Gmail classified as social notification",
+      category: "social",
+      score: 0,
+    };
+  }
+
+  if (labels.includes("CATEGORY_UPDATES")) {
+    return {
+      isRelevant: false,
+      reason: "Gmail classified as automated update",
+      category: "update",
+      score: 0,
+    };
+  }
+
+  // CATEGORY_FORUMS and CATEGORY_PERSONAL (or no category) fall through
+  // to keyword-based filtering below
+
   const text = `${email.subject} ${email.snippet} ${email.body}`.toLowerCase();
   const subject = email.subject.toLowerCase();
 
@@ -132,36 +165,38 @@ export function filterEmail(email: GmailMessage): EmailFilterResult {
     };
   }
 
-  // If we're not sure, mark as information (borderline case)
-  // This might need manual review or LLM classification in V2
+  // Borderline — keyword rules can't decide. Needs LLM classification.
   return {
-    isRelevant: true,
-    reason: "Potentially informational",
-    category: "information",
-    score: 40,
+    isRelevant: false,
+    reason: "Uncertain — needs LLM classification",
+    category: "unknown",
+    score: 0,
   };
 }
 
-// Batch filter emails
+// Batch filter emails into three buckets
 export function filterEmails(emails: GmailMessage[]): {
-  relevant: Array<{ email: GmailMessage; result: EmailFilterResult }>;
+  confident: Array<{ email: GmailMessage; result: EmailFilterResult }>;
+  uncertain: GmailMessage[];
   filtered: Array<{ email: GmailMessage; result: EmailFilterResult }>;
 } {
-  const relevant: Array<{ email: GmailMessage; result: EmailFilterResult }> = [];
+  const confident: Array<{ email: GmailMessage; result: EmailFilterResult }> = [];
+  const uncertain: GmailMessage[] = [];
   const filtered: Array<{ email: GmailMessage; result: EmailFilterResult }> = [];
 
   for (const email of emails) {
     const result = filterEmail(email);
 
-    if (result.isRelevant) {
-      relevant.push({ email, result });
+    if (result.category === "unknown") {
+      uncertain.push(email);
+    } else if (result.isRelevant) {
+      confident.push({ email, result });
     } else {
       filtered.push({ email, result });
     }
   }
 
-  // Sort relevant emails by score (highest first)
-  relevant.sort((a, b) => b.result.score - a.result.score);
+  confident.sort((a, b) => b.result.score - a.result.score);
 
-  return { relevant, filtered };
+  return { confident, uncertain, filtered };
 }
