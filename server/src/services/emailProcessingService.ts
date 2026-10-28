@@ -2,6 +2,8 @@ import type { GmailMessage } from "./gmailService.js";
 import type { EmailFilterResult } from "./emailFilterService.js";
 import { WorkspaceItem } from "../models/WorkspaceItem.js";
 import { findMatchingWorkspaceItem } from "./emailMatchingService.js";
+import { generateCommitment } from "./commitmentGenerationService.js";
+import { determineActionability } from "./actionabilityService.js";
 import type { Types } from "mongoose";
 
 // Extract dates from email text (deadlines, event dates)
@@ -184,9 +186,10 @@ export async function processEmailsToWorkspaceItems(
   userId: Types.ObjectId
 ) {
   const results = {
-    created: [] as any[],
-    updated: [] as any[],
-    failed: [] as any[],
+    created: [] as Array<{ id: string; title: string }>,
+    updated: [] as Array<{ id: string; title: string }>,
+    skipped: [] as Array<{ emailId: string; reason: string }>,
+    commitmentsGenerated: 0,
   };
 
   for (const { email, result } of emails) {
@@ -196,18 +199,61 @@ export async function processEmailsToWorkspaceItems(
         sourceEmails: `gmail:${email.id}`,
       });
 
-      const item = await processEmailToWorkspaceItem(email, result, userId);
-
       if (existedBefore) {
         // This exact email was already processed — skip
-      } else if (item.sourceEmails.length > 1) {
-        results.updated.push(item);
+        results.skipped.push({
+          emailId: email.id,
+          reason: "Email already processed",
+        });
+        continue;
+      }
+
+      const item = await processEmailToWorkspaceItem(email, result, userId);
+      const isNewItem = item.sourceEmails.length === 1;
+
+      if (isNewItem) {
+        // Created new item - always try to generate commitment
+        results.created.push({
+          id: item._id.toString(),
+          title: item.title,
+        });
+
+        try {
+          const commitmentResult = await generateCommitment(item);
+          if (commitmentResult.outcome === "created") {
+            results.commitmentsGenerated++;
+            console.log(`✓ Generated commitment for new item: "${item.title}"`);
+          }
+        } catch (error) {
+          console.error(`Failed to generate commitment for "${item.title}":`, error);
+        }
       } else {
-        results.created.push(item);
+        // Updated existing item (matched to thread/topic)
+        results.updated.push({
+          id: item._id.toString(),
+          title: item.title,
+        });
+
+        // Check if update made it actionable - generate commitment if so
+        const actionability = determineActionability(item);
+        if (actionability.decision === "actionable") {
+          try {
+            const commitmentResult = await generateCommitment(item);
+            if (commitmentResult.outcome === "created") {
+              results.commitmentsGenerated++;
+              console.log(`✓ Generated commitment for updated item: "${item.title}"`);
+            }
+          } catch (error) {
+            console.error(`Failed to generate commitment for "${item.title}":`, error);
+          }
+        }
       }
     } catch (error) {
       console.error(`Failed to process email ${email.id}:`, error);
-      results.failed.push({ email, error });
+      results.skipped.push({
+        emailId: email.id,
+        reason: `Processing error: ${error}`,
+      });
     }
   }
 

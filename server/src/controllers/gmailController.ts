@@ -72,27 +72,35 @@ export async function syncGmailEmails(req: Request, res: Response) {
 
     // Step 4: Combine confident + LLM-accepted emails and process
     const allRelevant = [...confident, ...llmAccepted];
+
+    if (allRelevant.length === 0) {
+      return res.json({
+        message: "No relevant emails found",
+        created: 0,
+        updated: 0,
+        skipped: emails.length,
+        commitmentsGenerated: 0,
+        details: { created: [], updated: [], skipped: [], commitmentsGenerated: 0 },
+      });
+    }
+
     const results = await processEmailsToWorkspaceItems(allRelevant, user._id);
 
-    console.log(`Created ${results.created.length} items, updated ${results.updated.length} items`);
+    console.log(`Gmail sync complete:`, {
+      created: results.created.length,
+      updated: results.updated.length,
+      skipped: results.skipped.length + filtered.length + llmRejected,
+      commitmentsGenerated: results.commitmentsGenerated,
+    });
 
-    res.status(200).json({
-      success: true,
-      summary: {
-        totalEmails: emails.length,
-        confidentRelevant: confident.length,
-        llmClassified: uncertain.length,
-        llmAccepted: llmAccepted.length,
-        llmRejected,
-        filteredOut: filtered.length,
-        itemsCreated: results.created.length,
-        itemsUpdated: results.updated.length,
-        failed: results.failed.length,
-      },
-      items: {
-        created: results.created,
-        updated: results.updated,
-      },
+    // Return summary matching Calendar sync format
+    return res.json({
+      message: "Gmail sync completed successfully",
+      created: results.created.length,
+      updated: results.updated.length,
+      skipped: results.skipped.length + filtered.length + llmRejected,
+      commitmentsGenerated: results.commitmentsGenerated,
+      details: results,
     });
   } catch (error: any) {
     console.error("Gmail sync failed:", error);
@@ -100,11 +108,22 @@ export async function syncGmailEmails(req: Request, res: Response) {
     // Handle specific Gmail API errors
     if (error.message?.includes("invalid_grant") || error.message?.includes("invalid_token")) {
       return res.status(401).json({
-        error: "Gmail access expired. Please sign in again to refresh permissions.",
+        error: "Gmail access expired. Please re-authenticate.",
+        details: error.message,
       });
     }
 
-    res.status(500).json({ error: "Failed to sync Gmail emails" });
+    if (error.message?.includes("Gmail")) {
+      return res.status(400).json({
+        error: "Failed to access Gmail. Please re-authenticate.",
+        details: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      error: "Gmail sync failed",
+      details: error.message,
+    });
   }
 }
 

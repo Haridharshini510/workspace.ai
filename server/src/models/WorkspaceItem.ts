@@ -15,6 +15,7 @@ interface IWorkspaceItem {
   source: string;
   sourceEmails: string[];
   threadIds: string[];
+  sourceCalendarEventId?: string;
   contextHistory: IContextEntry[];
   deadline?: Date;
   eventDate?: Date;
@@ -42,6 +43,7 @@ const workspaceItemSchema = new Schema<IWorkspaceItem>(
     source: { type: String, required: true },
     sourceEmails: { type: [String], default: [] },
     threadIds: { type: [String], default: [] },
+    sourceCalendarEventId: { type: String },
     contextHistory: { type: [contextEntrySchema], default: [] },
     deadline: { type: Date },
     eventDate: { type: Date },

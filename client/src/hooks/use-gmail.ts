@@ -10,8 +10,12 @@ export function useGmailSync() {
   return useMutation({
     mutationFn: gmailApi.sync,
     onSuccess: (data) => {
+      const itemsMsg = `${data.created} new items, ${data.updated} updated`;
+      const commitmentsMsg = data.commitmentsGenerated > 0
+        ? `, ${data.commitmentsGenerated} commitments generated`
+        : '';
       showToast(
-        `Gmail synced! ${data.summary.itemsCreated} new items, ${data.summary.itemsUpdated} updated`,
+        `Gmail synced! ${itemsMsg}${commitmentsMsg}`,
         'success'
       );
       // Invalidate workspace items to show new data

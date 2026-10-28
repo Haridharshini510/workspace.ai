@@ -58,12 +58,35 @@ async function tryModel(
   const data = await response.json();
 
   const choice = data.choices?.[0];
-  if (!choice?.message?.content) {
-    throw new Error(`Model ${model} returned no content`);
+  if (!choice?.message) {
+    throw new Error(`Model ${model} returned no message`);
+  }
+
+  // Handle both standard content and reasoning models
+  let content = choice.message.content || choice.message.reasoning;
+
+  if (!content) {
+    throw new Error(`Model ${model} returned no content or reasoning`);
+  }
+
+  // For reasoning models that embed JSON in verbose text, extract the JSON
+  // This handles models like nvidia/nemotron that output thinking process
+  if (choice.message.reasoning && !choice.message.content) {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        // Validate it's actually valid JSON
+        JSON.parse(jsonMatch[0]);
+        content = jsonMatch[0];
+      } catch {
+        // If JSON extraction fails, use full reasoning text
+        // The calling service will handle parsing
+      }
+    }
   }
 
   return {
-    content: choice.message.content,
+    content,
     model: data.model || model,
     usage: {
       promptTokens: data.usage?.prompt_tokens ?? 0,

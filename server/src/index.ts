@@ -8,6 +8,7 @@ import commitmentRoutes from "./routes/commitmentRoutes.js";
 import timelineRoutes from "./routes/timelineRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import gmailRoutes from "./routes/gmailRoutes.js";
+import calendarRoutes from "./routes/calendarRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -56,6 +57,7 @@ app.use("/api/workspace-items", workspaceItemRoutes);
 app.use("/api/commitments", commitmentRoutes);
 app.use("/api/timeline", timelineRoutes);
 app.use("/api/gmail", gmailRoutes);
+app.use("/api/calendar", calendarRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Not found" });

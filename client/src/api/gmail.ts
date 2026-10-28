@@ -1,18 +1,16 @@
 import { api } from './client';
 
 export interface GmailSyncResponse {
-  success: boolean;
-  summary: {
-    totalEmails: number;
-    relevantEmails: number;
-    filteredOut: number;
-    itemsCreated: number;
-    itemsUpdated: number;
-    failed: number;
-  };
-  items: {
-    created: any[];
-    updated: any[];
+  message: string;
+  created: number;
+  updated: number;
+  skipped: number;
+  commitmentsGenerated: number;
+  details: {
+    created: Array<{ id: string; title: string }>;
+    updated: Array<{ id: string; title: string }>;
+    skipped: Array<{ emailId: string; reason: string }>;
+    commitmentsGenerated: number;
   };
 }
 
