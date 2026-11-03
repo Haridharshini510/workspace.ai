@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { Toast, type ToastData } from './Toast'
 
 interface ToastContextValue {
@@ -22,6 +22,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = String(++nextId)
     setToasts((prev) => [...prev, { id, message, type }])
   }, [])
+
+  useEffect(() => {
+    const handler = () => addToast('Slow down — too many requests. Please wait a moment.', 'warning')
+    window.addEventListener('rate-limited', handler)
+    return () => window.removeEventListener('rate-limited', handler)
+  }, [addToast])
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))

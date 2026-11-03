@@ -23,6 +23,10 @@ class ApiClient {
       headers: this.getAuthHeaders(),
       ...options,
     })
+    if (res.status === 429) {
+      window.dispatchEvent(new CustomEvent('rate-limited'))
+    }
+
     if (!res.ok) {
       const body = (await res.json().catch(() => ({ error: res.statusText }))) as ApiError
       throw body
