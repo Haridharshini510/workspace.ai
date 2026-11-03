@@ -18,42 +18,22 @@ export async function getCommitments(req: Request, res: Response) {
 }
 
 export async function getCommitmentById(req: Request, res: Response) {
-  try {
-    const id = req.params.id;
-    const item = await Commitment.findOne({ _id: id, userId: req.userId });
-    if(!item){
-      res.status(404).json({ error: "Commitment not found" });
-      return;
-    }
-    res.status(200).json(item);
-  }
-   catch (error) {
-    console.error("Failed to retrieve commitment:", error);
-    res.status(500).json({ error: "Failed to retrieve commitment" });
-  }
+  res.status(200).json(req.commitment);
 }
 
 export async function updateCommitmentById(req: Request, res: Response) {
   try {
-    const id = req.params.id;
-
-    const item = await Commitment.findOneAndUpdate(
-      { _id: id, userId: req.userId },
+    const item = await Commitment.findByIdAndUpdate(
+      req.commitment._id,
       req.body,
       { new: true }
     );
-
-    if (!item) {
-      res.status(404).json({ error: "Commitment not found" });
-      return;
-    }
 
     res.status(200).json(item);
   } catch (error) {
     console.error("Failed to update commitment:", error);
     res.status(500).json({ error: "Failed to update commitment" });
   }
-
 }
 
 export async function createCommitment(req: Request, res: Response) {
@@ -78,15 +58,9 @@ export async function createCommitment(req: Request, res: Response) {
 
 export async function deleteCommitmentById(req: Request, res: Response) {
   try {
-    const id = req.params.id;
-    const item = await Commitment.findOneAndDelete({ _id: id, userId: req.userId });
-    if(!item){
-      res.status(404).json({ error: "Commitment not found" });
-      return;
-    }
-    res.status(200).json(item);
-  }
-   catch (error) {
+    await Commitment.findByIdAndDelete(req.commitment._id);
+    res.status(200).json(req.commitment);
+  } catch (error) {
     console.error("Failed to delete commitment:", error);
     res.status(500).json({ error: "Failed to delete commitment" });
   }
@@ -94,13 +68,10 @@ export async function deleteCommitmentById(req: Request, res: Response) {
 
 export async function getCommitmentsByWorkspaceItem(req: Request, res: Response) {
   try {
-    const workspaceItemId = req.params.id;
-    const workspaceItem = await WorkspaceItem.findOne({ _id: workspaceItemId, userId: req.userId });
-    if (!workspaceItem) {
-      res.status(404).json({ error: "Workspace item not found" });
-      return;
-    }
-    const commitments = await Commitment.find({ workspaceItemId, userId: req.userId });
+    const commitments = await Commitment.find({
+      workspaceItemId: req.workspaceItem._id,
+      userId: req.userId,
+    });
     res.status(200).json(commitments);
   } catch (error) {
     console.error("Failed to retrieve commitments for workspace item:", error);
@@ -110,19 +81,11 @@ export async function getCommitmentsByWorkspaceItem(req: Request, res: Response)
 
 export async function generateCommitmentForWorkspaceItem(req: Request, res: Response) {
   try {
-    const workspaceItemId = req.params.id;
-    const workspaceItem = await WorkspaceItem.findOne({ _id: workspaceItemId, userId: req.userId });
-    if (!workspaceItem) {
-      res.status(404).json({ error: "Workspace item not found" });
-      return;
-    }
-    const result = await generateCommitment(workspaceItem);
-
-const statusCode = result.outcome === "created" ? 201 : 200;
-
-res.status(statusCode).json(result);
+    const result = await generateCommitment(req.workspaceItem);
+    const statusCode = result.outcome === "created" ? 201 : 200;
+    res.status(statusCode).json(result);
   } catch (error) {
-    console.error("Failed to generate commitment:" , error);
+    console.error("Failed to generate commitment:", error);
     res.status(500).json({ error: "Failed to generate commitment" });
   }
 }

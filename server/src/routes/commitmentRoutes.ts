@@ -2,6 +2,7 @@ import { Router } from "express";
 import {getCommitments, createCommitment, getCommitmentById, updateCommitmentById,deleteCommitmentById} from "../controllers/commitmentController.js";
 import { validate } from "../middleware/validate.js";
 import { requireAuth } from "../middleware/auth.js";
+import { verifyCommitmentOwnership } from "../middleware/ownership.js";
 import {
   createCommitmentSchema,
   updateCommitmentSchema,
@@ -15,8 +16,8 @@ router.use(requireAuth);
 
 router.get("/", validate(commitmentQuerySchema, "query"), getCommitments);
 router.post("/", validate(createCommitmentSchema), createCommitment);
-router.get("/:id",validate(commitmentIdSchema, "params"), getCommitmentById);
-router.patch("/:id",validate(commitmentIdSchema, "params"), validate(updateCommitmentSchema), updateCommitmentById);
-router.delete("/:id",validate(commitmentIdSchema, "params"), deleteCommitmentById);
+router.get("/:id",validate(commitmentIdSchema, "params"), verifyCommitmentOwnership, getCommitmentById);
+router.patch("/:id",validate(commitmentIdSchema, "params"), verifyCommitmentOwnership, validate(updateCommitmentSchema), updateCommitmentById);
+router.delete("/:id",validate(commitmentIdSchema, "params"), verifyCommitmentOwnership, deleteCommitmentById);
 
 export default router;
