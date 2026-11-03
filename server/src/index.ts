@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
+import helmet from "helmet";
 import session from "express-session";
 import passport from "./config/passport.js";
 import { connectDatabase } from "./config/database.js";
@@ -9,9 +10,12 @@ import timelineRoutes from "./routes/timelineRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import gmailRoutes from "./routes/gmailRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
+import { generalLimiter, authLimiter, syncLimiter, writeLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+app.use(helmet());
 
 // CORS configuration - allow requests from frontend
 app.use((req, res, next) => {
@@ -45,19 +49,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(generalLimiter);
+
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Auth routes (public - no auth middleware)
-app.use("/api/auth", authRoutes);
+// Auth routes (public - tighter rate limit on login attempts)
+app.use("/api/auth", authLimiter, authRoutes);
 
 // Protected routes
-app.use("/api/workspace-items", workspaceItemRoutes);
-app.use("/api/commitments", commitmentRoutes);
+app.use("/api/workspace-items", writeLimiter, workspaceItemRoutes);
+app.use("/api/commitments", writeLimiter, commitmentRoutes);
 app.use("/api/timeline", timelineRoutes);
-app.use("/api/gmail", gmailRoutes);
-app.use("/api/calendar", calendarRoutes);
+app.use("/api/gmail", syncLimiter, gmailRoutes);
+app.use("/api/calendar", syncLimiter, calendarRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Not found" });
