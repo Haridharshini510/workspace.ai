@@ -1,5 +1,6 @@
 import { callLlm } from "./llmService.js";
 import type { GmailMessage } from "./gmailService.js";
+import { wrapUserContent } from "./sanitization.js";
 
 export interface EmailClassification {
   isRelevant: boolean;
@@ -44,12 +45,14 @@ Respond ONLY with valid JSON, no markdown fences, no extra text:
 If rejecting, still fill in type/title/summary with your best guess — but set isRelevant to false.`;
 
 function buildUserPrompt(email: GmailMessage): string {
-  return [
+  const emailData = [
     `Subject: ${email.subject}`,
     `From: ${email.from}`,
     `Date: ${email.date.toISOString()}`,
     `Snippet: ${email.snippet}`,
   ].join("\n");
+
+  return wrapUserContent(emailData);
 }
 
 export async function classifyEmail(email: GmailMessage): Promise<EmailClassification> {

@@ -2,6 +2,7 @@ import { callLlm } from "./llmService.js";
 import { WorkspaceItem } from "../models/WorkspaceItem.js";
 import type { GmailMessage } from "./gmailService.js";
 import type { Types } from "mongoose";
+import { wrapUserContent } from "./sanitization.js";
 
 interface MatchResult {
   matched: boolean;
@@ -79,11 +80,15 @@ Respond ONLY with valid JSON, no markdown fences:
 
 If matched, itemIndex is the [index] number from the list. If not matched, itemIndex is null.`;
 
+  const emailData = [
+    `Subject: ${email.subject}`,
+    `From: ${email.from}`,
+    `Date: ${email.date.toISOString()}`,
+    `Snippet: ${email.snippet}`,
+  ].join("\n");
+
   const userPrompt = `New email:
-Subject: ${email.subject}
-From: ${email.from}
-Date: ${email.date.toISOString()}
-Snippet: ${email.snippet}
+${wrapUserContent(emailData)}
 
 Existing workspace items:
 ${itemList}`;
