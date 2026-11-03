@@ -29,3 +29,9 @@ export const updateCommitmentSchema =
 export const commitmentIdSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
 });
+
+export const commitmentQuerySchema = z.object({
+  workspaceItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId").optional(),
+  status: z.enum(["not_started", "in_progress", "completed", "dismissed"]).optional(),
+  priority: z.enum(["urgent", "high", "medium", "low"]).optional(),
+});

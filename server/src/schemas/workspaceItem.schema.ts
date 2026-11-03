@@ -39,3 +39,9 @@ export const updateWorkspaceItemSchema =
 export const workspaceItemIdSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId"),
 });
+
+export const workspaceItemQuerySchema = z.object({
+  type: z.enum(["information", "opportunity", "event", "announcement"]).optional(),
+  status: z.enum(["open", "closed", "upcoming", "active", "expired"]).optional(),
+  priority: z.enum(["urgent", "high", "medium", "low"]).optional(),
+});

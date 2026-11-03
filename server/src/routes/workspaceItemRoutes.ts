@@ -6,6 +6,7 @@ import {
   createWorkspaceItemSchema,
   updateWorkspaceItemSchema,
   workspaceItemIdSchema,
+  workspaceItemQuerySchema,
 } from "../schemas/workspaceItem.schema.js";
 import { generateCommitmentForWorkspaceItem, getCommitmentsByWorkspaceItem } from "../controllers/commitmentController.js";
 const router = Router();
@@ -13,7 +14,7 @@ const router = Router();
 // Apply auth middleware to all routes
 router.use(requireAuth);
 
-router.get("/", getWorkspaceItems);
+router.get("/", validate(workspaceItemQuerySchema, "query"), getWorkspaceItems);
 router.post("/", validate(createWorkspaceItemSchema), createWorkspaceItem);
 router.get("/:id",validate(workspaceItemIdSchema, "params"), getWorkspaceItemById);
 router.patch("/:id",validate(workspaceItemIdSchema, "params"), validate(updateWorkspaceItemSchema), updateWorkspaceItemById);

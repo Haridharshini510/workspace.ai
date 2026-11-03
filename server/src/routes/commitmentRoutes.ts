@@ -6,13 +6,14 @@ import {
   createCommitmentSchema,
   updateCommitmentSchema,
   commitmentIdSchema,
+  commitmentQuerySchema,
 } from "../schemas/commitment.schema.js";
 const router = Router();
 
 // Apply auth middleware to all routes
 router.use(requireAuth);
 
-router.get("/", getCommitments);
+router.get("/", validate(commitmentQuerySchema, "query"), getCommitments);
 router.post("/", validate(createCommitmentSchema), createCommitment);
 router.get("/:id",validate(commitmentIdSchema, "params"), getCommitmentById);
 router.patch("/:id",validate(commitmentIdSchema, "params"), validate(updateCommitmentSchema), updateCommitmentById);

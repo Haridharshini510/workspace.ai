@@ -53,6 +53,15 @@ const workspaceItemSchema = new Schema<IWorkspaceItem>(
   { timestamps: true }
 );
 
+workspaceItemSchema.index({ userId: 1, createdAt: -1 });
+workspaceItemSchema.index({ userId: 1, type: 1 });
+workspaceItemSchema.index({ userId: 1, deadline: 1 });
+workspaceItemSchema.index({ userId: 1, priority: 1 });
+workspaceItemSchema.index({ userId: 1, sourceEmails: 1 });
+workspaceItemSchema.index({ userId: 1, threadIds: 1 });
+workspaceItemSchema.index({ userId: 1, sourceCalendarEventId: 1 }, { sparse: true });
+workspaceItemSchema.index({ userId: 1, hiddenFromTimeline: 1, deadline: 1 });
+workspaceItemSchema.index({ userId: 1, status: 1, deadline: 1 });
 
 export const WorkspaceItem = model<IWorkspaceItem>("WorkspaceItem", workspaceItemSchema);
 export type { IWorkspaceItem };

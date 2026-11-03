@@ -26,6 +26,13 @@ const commitmentSchema = new Schema<ICommitment>(
   { timestamps: true }
 );
 
+commitmentSchema.index({ userId: 1, createdAt: -1 });
+commitmentSchema.index({ userId: 1, status: 1 });
+commitmentSchema.index({ userId: 1, priority: 1 });
+commitmentSchema.index({ userId: 1, deadline: 1 });
+commitmentSchema.index({ userId: 1, hiddenFromTimeline: 1, deadline: 1 });
+commitmentSchema.index({ workspaceItemId: 1 });
+commitmentSchema.index({ userId: 1, status: 1, deadline: 1 });
 
 export const Commitment = model<ICommitment>("Commitment", commitmentSchema);
 export type { ICommitment };
