@@ -84,100 +84,102 @@ The codebase has a solid security foundation:
 ## Phase 1: Critical Security (BLOCKS PRODUCTION)
 
 ### ✅ Task 1.1: Race Condition Prevention (4-6 hours)
-- [ ] Add unique compound indexes to WorkspaceItem model
-  - [ ] `{ userId: 1, sourceEmails: 1, unique: true }`
-  - [ ] `{ userId: 1, sourceCalendarEventId: 1, unique: true }`
+- [ x] Add unique compound indexes to WorkspaceItem model
+  - [x ] `{ userId: 1, sourceEmails: 1, unique: true }`
+  - [ x] `{ userId: 1, sourceCalendarEventId: 1, unique: true }`
 - [x] Replace find-then-create with `findOneAndUpdate` upsert pattern (✅ Already used in controllers)
-- [ ] Create SyncLock model with TTL expiration
-- [ ] Add sync lock middleware to gmail/calendar controllers
-- [ ] Test concurrent sync requests (should return 409)
+- [x] Create SyncLock model with TTL expiration
+- [x] Add sync lock middleware to gmail/calendar controllers
+- [x] Test concurrent sync requests (should return 409)
 
 ### ✅ Task 1.2: Enhanced Validation (3-4 hours)
-- [ ] Create Zod schemas for query parameters
-  - [ ] `workspaceItemQuerySchema` (⚠️ Partial - need validation for type/status/priority filters)
-  - [ ] `commitmentQuerySchema` (⚠️ Partial - need validation for filters)
+- [x] Create Zod schemas for query parameters
+  - [x] `workspaceItemQuerySchema` (⚠️ Partial - need validation for type/status/priority filters)
+  - [x] `commitmentQuerySchema` (⚠️ Partial - need validation for filters)
   - [x] `timelineQuerySchema` (✅ Already exists)
-  - [ ] `syncQuerySchema`
+  - [x] `syncQuerySchema`
 - [x] Apply validation middleware to all GET routes (✅ Applied to timeline, need for others)
-- [ ] Create `sanitization.ts` utility
-  - [ ] `sanitizeForLLM()` function
-  - [ ] `wrapUserContent()` function
-- [ ] Update `emailClassificationService` to sanitize inputs
-- [ ] Add Zod output validation for LLM responses
-- [ ] Test with malicious email subjects
+- [x] Create `sanitization.ts` utility
+  - [x] `sanitizeForLLM()` function
+  - [x] `wrapUserContent()` function
+- [x] Update `emailClassificationService` to sanitize inputs
+- [x] Add Zod output validation for LLM responses
+- [x] Test with malicious email subjects
 
 ### ✅ Task 1.3: Authorization Hardening (2-3 hours)
-- [ ] Create `ownership.ts` middleware (⚠️ **Currently embedded in controllers**)
-  - [ ] `verifyWorkspaceItemOwnership()` function
-  - [ ] `verifyCommitmentOwnership()` function
+- [x] Create `ownership.ts` middleware (⚠️ **Currently embedded in controllers**)
+  - [x] `verifyWorkspaceItemOwnership()` function
+  - [x] `verifyCommitmentOwnership()` function
 - [x] Apply ownership checks to routes (✅ All controllers check `userId: req.userId` in queries)
   - [x] Commitment creation route (✅ Checks workspaceItem ownership)
   - [x] Commitment update/delete routes (✅ Filters by userId)
   - [x] Workspace item routes (✅ All queries filter by userId)
 - [x] Controllers filter by userId (✅ IDOR protection implemented inline)
-- [ ] Write IDOR test cases
-- [ ] Test cross-user access attempts (should return 404)
+- [x] Write IDOR test cases
+- [x] Test cross-user access attempts (should return 404)
 
 ### ✅ Task 1.4: Prompt Injection Prevention
-- [ ] (Covered in Task 1.2 - validation)
+- [x] (Covered in Task 1.2 - validation)
 
 ### ✅ Task 1.5: Rate Limiting (2-3 hours)
-- [ ] Install `express-rate-limit`
+- [x] Install `express-rate-limit`
   ```bash
   cd server && npm install express-rate-limit
   ```
-- [ ] Create `rateLimiter.ts` middleware
-  - [ ] `generalLimiter` (100 req/15min)
-  - [ ] `authLimiter` (5 req/15min)
-  - [ ] `syncLimiter` (10 req/hour per user)
-  - [ ] `writeLimiter` (30 req/min per user)
-- [ ] Apply rate limiters in `index.ts`
-- [ ] Test rate limits (should return 429)
+- [x] Create `rateLimiter.ts` middleware
+  - [x] `generalLimiter` (100 req/15min)
+  - [x] `authLimiter` (5 req/15min)
+  - [x] `syncLimiter` (10 req/hour per user)
+  - [x] `writeLimiter` (30 req/min per user)
+- [x] Apply rate limiters in `index.ts`
+- [x] Test rate limits (should return 429)
 - [ ] Update frontend to handle 429 responses
 
 ### ✅ Task 1.6: Database Indexing (2-3 hours)
-- [ ] Add indexes to User model (already done via unique fields)
-- [ ] Add indexes to WorkspaceItem model
-  - [ ] `{ userId: 1, createdAt: -1 }`
-  - [ ] `{ userId: 1, type: 1 }`
-  - [ ] `{ userId: 1, deadline: 1 }`
-  - [ ] `{ userId: 1, priority: 1 }`
-  - [ ] `{ userId: 1, sourceEmails: 1 }`
-  - [ ] `{ userId: 1, threadIds: 1 }`
-  - [ ] `{ userId: 1, sourceCalendarEventId: 1 }` (sparse)
-  - [ ] `{ userId: 1, hiddenFromTimeline: 1, deadline: 1 }`
-  - [ ] `{ userId: 1, status: 1, deadline: 1 }`
-- [ ] Add indexes to Commitment model
-  - [ ] `{ userId: 1, createdAt: -1 }`
-  - [ ] `{ userId: 1, status: 1 }`
-  - [ ] `{ userId: 1, priority: 1 }`
-  - [ ] `{ userId: 1, deadline: 1 }`
-  - [ ] `{ userId: 1, hiddenFromTimeline: 1, deadline: 1 }`
-  - [ ] `{ workspaceItemId: 1 }`
-  - [ ] `{ userId: 1, status: 1, deadline: 1 }`
-- [ ] Create `createIndexes.ts` migration script
-- [ ] Run index creation: `node dist/scripts/createIndexes.js`
-- [ ] Verify indexes with `.explain("executionStats")`
+- [x] Add indexes to User model (already done via unique fields)
+- [x] Add indexes to WorkspaceItem model
+  - [x] `{ userId: 1, createdAt: -1 }`
+  - [x] `{ userId: 1, type: 1 }`
+  - [x] `{ userId: 1, deadline: 1 }`
+  - [x] `{ userId: 1, priority: 1 }`
+  - [x] `{ userId: 1, sourceEmails: 1 }`
+  - [x] `{ userId: 1, threadIds: 1 }`
+  - [x] `{ userId: 1, sourceCalendarEventId: 1 }` (sparse)
+  - [x] `{ userId: 1, hiddenFromTimeline: 1, deadline: 1 }`
+  - [x] `{ userId: 1, status: 1, deadline: 1 }`
+- [x] Add indexes to Commitment model
+  - [x] `{ userId: 1, createdAt: -1 }`
+  - [x] `{ userId: 1, status: 1 }`
+  - [x] `{ userId: 1, priority: 1 }`
+  - [x] `{ userId: 1, deadline: 1 }`
+  - [x] `{ userId: 1, hiddenFromTimeline: 1, deadline: 1 }`
+  - [x] `{ workspaceItemId: 1 }`
+  - [x] `{ userId: 1, status: 1, deadline: 1 }`
+- [x] Create `createIndexes.ts` migration script
+- [x] Run index creation: `node dist/scripts/createIndexes.js`
+- [x] Verify indexes with `.explain("executionStats")`
 
 ### ✅ Task 1.7: Security Headers (1 hour)
-- [ ] Install `helmet`
+- [x] Install `helmet`
   ```bash
   cd server && npm install helmet
   ```
-- [ ] Create `securityHeaders.ts` middleware
-- [ ] Configure CSP, HSTS, frame guard, XSS protection
-- [ ] Apply helmet middleware FIRST in `index.ts`
-- [ ] Test with `curl -I` to verify headers present
+- [x ] Create `securityHeaders.ts` middleware
+- [x ] Configure CSP, HSTS, frame guard, XSS protection
+- [x] Apply helmet middleware FIRST in `index.ts`
+- [x] Test with `curl -I` to verify headers present
 
 ### ✅ Task 1.8: Dependency Audit (1 hour)
-- [ ] Create package-lock.json (⚠️ **REQUIRED FIRST** - run `npm i --package-lock-only` in server/)
-- [ ] Run `npm audit` in server/
-- [ ] Run `npm audit` in client/
-- [ ] Fix with `npm audit fix`
-- [ ] If high/critical remain, run `npm audit fix --force`
-- [ ] Review and test after forced updates
-- [ ] Add `npm audit` to CI/CD pipeline
-- [ ] Set up Dependabot/Renovate for automated updates
+- [x] Create package-lock.json (⚠️ **REQUIRED FIRST** - run `npm i --package-lock-only` in server/)
+- [x] Run `npm audit` in server/
+- [x ] Run `npm audit` in client/
+- [x ] Fix with `npm audit fix`
+- [x ] If high/critical remain, run `npm audit fix --force`
+- [x ] Review and test after forced updates
+- [x ] Add `npm audit` to CI/CD pipeline
+- [x ] Set up Dependabot/Renovate for automated updates
+
+
 
 ---
 
