@@ -1,3 +1,5 @@
+import { withRetry, TIMEOUTS } from "../utils/retry.js";
+
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 const DEFAULT_MODELS = [
@@ -36,26 +38,32 @@ async function tryModel(
   messages: LlmMessage[],
   options: LlmOptions
 ): Promise<LlmResponse> {
-  const response = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  const data = await withRetry(
+    async () => {
+      const response = await fetch(OPENROUTER_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: options.temperature ?? 0.1,
+          max_tokens: options.maxTokens ?? 512,
+        }),
+        signal: AbortSignal.timeout(TIMEOUTS.LLM_API),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Model ${model} failed (${response.status}): ${errorBody}`);
+      }
+
+      return response.json();
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: options.temperature ?? 0.1,
-      max_tokens: options.maxTokens ?? 512,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Model ${model} failed (${response.status}): ${errorBody}`);
-  }
-
-  const data = await response.json();
+    { label: `LLM ${model}` }
+  );
 
   const choice = data.choices?.[0];
   if (!choice?.message) {

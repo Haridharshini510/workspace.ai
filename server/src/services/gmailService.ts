@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import type { IUser } from "../models/User.js";
+import { withRetry, TIMEOUTS } from "../utils/retry.js";
 
 // Initialize Gmail API client with user's OAuth tokens
 function getGmailClient(user: IUser) {
@@ -15,7 +16,11 @@ function getGmailClient(user: IUser) {
     refresh_token: user.refreshToken,
   });
 
-  return google.gmail({ version: "v1", auth: oauth2Client });
+  return google.gmail({
+    version: "v1",
+    auth: oauth2Client,
+    timeout: TIMEOUTS.GOOGLE_API,
+  });
 }
 
 export interface GmailMessage {
@@ -39,11 +44,14 @@ export async function fetchRecentEmails(
     const gmail = getGmailClient(user);
 
     // List recent messages (excluding sent, drafts, spam, trash)
-    const response = await gmail.users.messages.list({
-      userId: "me",
-      maxResults,
-      q: "-in:sent -in:drafts -in:spam -in:trash", // Only inbox emails
-    });
+    const response = await withRetry(
+      () => gmail.users.messages.list({
+        userId: "me",
+        maxResults,
+        q: "-in:sent -in:drafts -in:spam -in:trash",
+      }),
+      { label: "Gmail list messages" }
+    );
 
     const messages = response.data.messages || [];
 
@@ -53,11 +61,14 @@ export async function fetchRecentEmails(
 
     // Fetch full details for each message
     const emailPromises = messages.map(async (message) => {
-      const fullMessage = await gmail.users.messages.get({
-        userId: "me",
-        id: message.id!,
-        format: "full",
-      });
+      const fullMessage = await withRetry(
+        () => gmail.users.messages.get({
+          userId: "me",
+          id: message.id!,
+          format: "full",
+        }),
+        { label: `Gmail get message ${message.id}` }
+      );
 
       return parseGmailMessage(fullMessage.data);
     });
@@ -143,11 +154,14 @@ export async function fetchEmailsByDateRange(
 
     const query = `after:${afterTimestamp} before:${beforeTimestamp} -in:sent -in:drafts -in:spam -in:trash`;
 
-    const response = await gmail.users.messages.list({
-      userId: "me",
-      maxResults,
-      q: query,
-    });
+    const response = await withRetry(
+      () => gmail.users.messages.list({
+        userId: "me",
+        maxResults,
+        q: query,
+      }),
+      { label: "Gmail list messages by date range" }
+    );
 
     const messages = response.data.messages || [];
 
@@ -156,11 +170,14 @@ export async function fetchEmailsByDateRange(
     }
 
     const emailPromises = messages.map(async (message) => {
-      const fullMessage = await gmail.users.messages.get({
-        userId: "me",
-        id: message.id!,
-        format: "full",
-      });
+      const fullMessage = await withRetry(
+        () => gmail.users.messages.get({
+          userId: "me",
+          id: message.id!,
+          format: "full",
+        }),
+        { label: `Gmail get message ${message.id}` }
+      );
 
       return parseGmailMessage(fullMessage.data);
     });

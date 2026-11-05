@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes.js";
 import gmailRoutes from "./routes/gmailRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import { generalLimiter, authLimiter, syncLimiter, writeLimiter } from "./middleware/rateLimiter.js";
+import { requestTimeout } from "./middleware/requestTimeout.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(requestTimeout());
 
 // Session middleware (used temporarily during OAuth flow)
 app.use(

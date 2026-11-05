@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import type { IUser } from "../models/User.js";
+import { withRetry, TIMEOUTS } from "../utils/retry.js";
 
 // Initialize Google Calendar API client with user's OAuth tokens
 function getCalendarClient(user: IUser) {
@@ -15,7 +16,11 @@ function getCalendarClient(user: IUser) {
     refresh_token: user.refreshToken,
   });
 
-  return google.calendar({ version: "v3", auth: oauth2Client });
+  return google.calendar({
+    version: "v3",
+    auth: oauth2Client,
+    timeout: TIMEOUTS.GOOGLE_API,
+  });
 }
 
 export interface CalendarEvent {
@@ -45,14 +50,17 @@ export async function fetchUpcomingEvents(
     futureDate.setDate(now.getDate() + daysAhead);
 
     // Fetch events from primary calendar
-    const response = await calendar.events.list({
-      calendarId: "primary",
-      timeMin: now.toISOString(),
-      timeMax: futureDate.toISOString(),
-      singleEvents: true, // Expand recurring events into individual instances
-      orderBy: "startTime",
-      maxResults: 250, // Google's max is 2500, but 250 is reasonable for 30 days
-    });
+    const response = await withRetry(
+      () => calendar.events.list({
+        calendarId: "primary",
+        timeMin: now.toISOString(),
+        timeMax: futureDate.toISOString(),
+        singleEvents: true,
+        orderBy: "startTime",
+        maxResults: 250,
+      }),
+      { label: "Calendar list upcoming events" }
+    );
 
     const events = response.data.items || [];
 
@@ -130,14 +138,17 @@ export async function fetchEventsByDateRange(
   try {
     const calendar = getCalendarClient(user);
 
-    const response = await calendar.events.list({
-      calendarId: "primary",
-      timeMin: startDate.toISOString(),
-      timeMax: endDate.toISOString(),
-      singleEvents: true,
-      orderBy: "startTime",
-      maxResults: 250,
-    });
+    const response = await withRetry(
+      () => calendar.events.list({
+        calendarId: "primary",
+        timeMin: startDate.toISOString(),
+        timeMax: endDate.toISOString(),
+        singleEvents: true,
+        orderBy: "startTime",
+        maxResults: 250,
+      }),
+      { label: "Calendar list events by date range" }
+    );
 
     const events = response.data.items || [];
 
