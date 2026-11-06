@@ -186,26 +186,26 @@ The codebase has a solid security foundation:
 ## Phase 2: High Priority Hardening
 
 ### ✅ Task 2.1: Retry Logic with Exponential Backoff (2-3 hours)
-- [ ] Install `p-retry`
+- [x ] Install `p-retry`
   ```bash
   cd server && npm install p-retry
   ```
-- [ ] Create `retry.ts` utility with `withRetry()` function
-- [ ] Apply retry to `fetchRecentEmails()` in gmailService
-- [ ] Apply retry to `fetchUpcomingEvents()` in calendarService
-- [ ] Apply retry to LLM API calls in llmService
-- [ ] Configure retry options (3 retries, exponential backoff)
-- [ ] Test with simulated API failures
+- [x ] Create `retry.ts` utility with `withRetry()` function
+- [x ] Apply retry to `fetchRecentEmails()` in gmailService
+- [x ] Apply retry to `fetchUpcomingEvents()` in calendarService
+- [x ] Apply retry to LLM API calls in llmService
+- [x ] Configure retry options (3 retries, exponential backoff)
+- [x ] Test with simulated API failures
 
 ### ✅ Task 2.2: Request Timeouts (2 hours)
 - [ ] Install `connect-timeout`
   ```bash
   cd server && npm install connect-timeout
   ```
-- [ ] Add global timeout middleware (5 minutes)
-- [ ] Add per-route timeouts for expensive operations
-- [ ] Use `AbortSignal.timeout()` for fetch calls
-- [ ] Test timeout behavior
+- [x ] Add global timeout middleware (5 minutes)
+- [x ] Add per-route timeouts for expensive operations
+- [x ] Use `AbortSignal.timeout()` for fetch calls
+- [x ] Test timeout behavior
 
 ### ✅ Task 2.3: Session Management (1 hour)
 - [x] Update JWT signing to include explicit `expiresIn: "7d"` (✅ Already configured in authController)
