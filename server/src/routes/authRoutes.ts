@@ -2,17 +2,18 @@ import { Router } from "express";
 import passport from "../config/passport.js";
 import { handleGoogleCallback, getCurrentUser, logout } from "../controllers/authController.js";
 import { requireAuth } from "../middleware/auth.js";
+import { authLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
-// Start Google OAuth flow
-// When user visits this endpoint, they're redirected to Google login
+// Start Google OAuth flow — rate-limited to prevent abuse
 router.get(
   "/google",
+  authLimiter,
   passport.authenticate("google", {
     scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.readonly"],
-    accessType: "offline", // Get refresh token for Gmail API later
-    prompt: "consent", // Force consent screen to get refresh token
+    accessType: "offline",
+    prompt: "consent",
   })
 );
 

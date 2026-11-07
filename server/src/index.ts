@@ -10,7 +10,7 @@ import timelineRoutes from "./routes/timelineRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import gmailRoutes from "./routes/gmailRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
-import { generalLimiter, authLimiter, syncLimiter, writeLimiter } from "./middleware/rateLimiter.js";
+import { generalLimiter, syncLimiter, writeLimiter } from "./middleware/rateLimiter.js";
 import { requestTimeout } from "./middleware/requestTimeout.js";
 
 const app = express();
@@ -57,8 +57,8 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Auth routes (public - tighter rate limit on login attempts)
-app.use("/api/auth", authLimiter, authRoutes);
+// Auth routes (authLimiter applied per-route inside authRoutes)
+app.use("/api/auth", authRoutes);
 
 // Protected routes
 app.use("/api/workspace-items", writeLimiter, workspaceItemRoutes);
